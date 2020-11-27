@@ -24,15 +24,23 @@ public class LubanApplicationContext {
 
 
     public LubanApplicationContext(Class configClass) {
+//        扫描，生成beanDefinition,添加到beanDefinitionMap
         scan(configClass);
+//        非懒加载单例bean放入单例池
         instanceSingletonBean();
     }
 
+    /**
+     * 扫描，并生成beanDefinitionMap
+     * @param configClass
+     */
     public void scan(Class configClass){
         ComponentScan componentScan = (ComponentScan)configClass.getAnnotation(ComponentScan.class);
         String scanPath = componentScan.value().replace(".","/");
+//        扫描出所有的class文件
         List<Class> classList = genBeanClasses(scanPath);
         for (Class clazz : classList) {
+//            是否是bean
             if(clazz.isAnnotationPresent(Component.class)){
                 Component component = (Component) clazz.getAnnotation(Component.class);
                 String beanName = component.value();
@@ -56,6 +64,11 @@ public class LubanApplicationContext {
         }
     }
 
+    /**
+     * 获取路径下所有class文件
+     * @param scanPath
+     * @return
+     */
     private List<Class> genBeanClasses(String scanPath) {
         List<Class> classList = new ArrayList();
         ClassLoader classLoader = this.getClass().getClassLoader();
@@ -65,6 +78,12 @@ public class LubanApplicationContext {
         return classList;
     }
 
+    /**
+     * 递归获取所有class文件，放入classList
+     * @param classLoader
+     * @param classList
+     * @param fileRoot
+     */
     private void genAllClasses(ClassLoader classLoader,List<Class> classList,File fileRoot){
         for (File file : fileRoot.listFiles()) {
             if(file.isDirectory()){
@@ -84,6 +103,9 @@ public class LubanApplicationContext {
         }
     }
 
+    /**
+     * 实例化非懒加载单例bean
+     */
     private void instanceSingletonBean() {
         for (String beanName : beanDefinitionMap.keySet()) {
             BeanDefinition beanDefinition = beanDefinitionMap.get(beanName);
@@ -94,6 +116,12 @@ public class LubanApplicationContext {
         }
     }
 
+    /**
+     * 创建bean
+     * @param beanName
+     * @param beanDefinition
+     * @return
+     */
     private Object doCreatBean(String beanName,BeanDefinition beanDefinition) {
         try {
             Class beanClass = beanDefinition.getBeanClass();
@@ -133,6 +161,11 @@ public class LubanApplicationContext {
     }
 
 
+    /**
+     * 获取bean
+     * @param beanName
+     * @return
+     */
     public Object getBean(String beanName){
         if(singletonObjects.containsKey(beanName)){
             return singletonObjects.get(beanName);
