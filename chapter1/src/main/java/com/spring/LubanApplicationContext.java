@@ -42,6 +42,11 @@ public class LubanApplicationContext {
                 if(clazz.isAnnotationPresent(Scope.class)&&ScopeEnum.prototype.name().equals(((Scope)clazz.getAnnotation(Scope.class)).value())){
                     beanDefinition.setScope(ScopeEnum.prototype);
                 }
+                if(clazz.isAnnotationPresent(Lazy.class)){
+                    beanDefinition.setLazy(true);
+                }else{
+                    beanDefinition.setLazy(false);
+                }
                 beanDefinitionMap.put(beanName,beanDefinition);
 
                 if(BeanPostProcessor.class.isAssignableFrom(clazz)){
@@ -82,7 +87,7 @@ public class LubanApplicationContext {
     private void instanceSingletonBean() {
         for (String beanName : beanDefinitionMap.keySet()) {
             BeanDefinition beanDefinition = beanDefinitionMap.get(beanName);
-            if (beanDefinition.getScope().equals(ScopeEnum.singleton)){
+            if (beanDefinition.getScope().equals(ScopeEnum.singleton)&&!beanDefinition.isLazy()){
                 Object bean = doCreatBean(beanName, beanDefinition);
                 singletonObjects.put(beanName,bean);
             }
