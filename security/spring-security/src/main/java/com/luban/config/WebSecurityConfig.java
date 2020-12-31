@@ -1,7 +1,7 @@
-package com.luban.security.config;
+package com.luban.config;
 
-import com.luban.security.service.MyUserDetailService;
-import com.luban.security.service.MyUserDetailService2;
+import com.luban.service.MyUserDetailService;
+import com.luban.service.MyUserDetailService2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
